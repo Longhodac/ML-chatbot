@@ -6,3 +6,6 @@ colorama>=0.4.6
 numpy>=1.26.0,<2.0.0
 scikit-learn>=1.4.0
 Flask>=3.0.0
+tqdm>=4.66.0
+jupyter>=1.0.0
+ipykernel>=6.25.0
