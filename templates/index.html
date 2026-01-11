@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joana - AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Joana</h1>
+                <span class="status">AI Assistant</span>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="chat-window" id="chatMessages">
+                <div class="message message-bot">
+                    <span class="message-label">Joana</span>
+                    <p class="message-text">Hello. How can I help you today?</p>
+                </div>
+            </div>
+
+            <form class="input-form" onsubmit="sendMessage(event)">
+                <input
+                    type="text"
+                    id="userInput"
+                    class="input-field"
+                    placeholder="Type a message..."
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <button type="submit" class="submit-btn">Send</button>
+            </form>
+        </main>
+
+        <footer class="footer">
+            <p>Built with TensorFlow and Flask</p>
+        </footer>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+
+        function sendMessage(e) {
+            e.preventDefault();
+            const message = userInput.value.trim();
+
+            if (message === '') return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('Error: Could not connect to server.', 'bot');
+            });
+        }
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+
+            const label = document.createElement('span');
+            label.className = 'message-label';
+            label.textContent = type === 'user' ? 'You' : 'Joana';
+
+            const textP = document.createElement('p');
+            textP.className = 'message-text';
+            textP.textContent = text;
+
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(textP);
+            chatMessages.appendChild(messageDiv);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
